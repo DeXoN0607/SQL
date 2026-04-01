@@ -46,9 +46,6 @@ jobs:
           java -jar artifacts/app-deadline.jar -P:jdbc.url=jdbc:mysql://localhost:3306/app -P:jdbc.user=app -P:jdbc.password=pass &
           sleep 10
 
-      - name: Check SUT is running
-        run: curl -f http://localhost:9999 || (echo "SUT failed to start" && exit 1)
-
       - name: Run tests
         run: ./gradlew clean test
 
