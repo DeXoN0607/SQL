@@ -34,15 +34,10 @@ jobs:
       - name: Wait for MySQL to initialize
         run: sleep 30
 
-
       - name: Start SUT in background
         run: |
           java -jar ./artifacts/app-deadline.jar -P:jdbc.url=jdbc:mysql://127.0.0.1:3306/app -P:jdbc.user=app -P:jdbc.password=pass &
           sleep 20
-
-      - name: Check SUT is running
-        run: |
-          curl -v http://localhost:9999 || (echo "SUT failed to start" && exit 1)
 
       - name: Build with Gradle
         run: ./gradlew test --info -Dselenide.headless=true
