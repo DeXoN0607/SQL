@@ -34,10 +34,6 @@ jobs:
       - name: Wait for MySQL to initialize
         run: sleep 30
 
-      - name: Check MySQL tables
-        run: |
-          sudo apt-get update && sudo apt-get install -y mysql-client
-          mysql -h 127.0.0.1 -P 3306 -u root -proot -e "SHOW TABLES;" app
 
       - name: Start SUT in background
         run: |
