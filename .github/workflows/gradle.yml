@@ -16,6 +16,13 @@ jobs:
           MYSQL_PASSWORD: pass
         ports:
           - 3306:3306
+        volumes:
+          - ${{ github.workspace }}/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost -u root -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
 
     steps:
       - uses: actions/checkout@v2
@@ -29,11 +36,22 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Wait for MySQL
-        run: sleep 20
+      - name: Wait for MySQL to be ready
+        run: |
+          echo "Waiting for MySQL..."
+          sleep 30
+          # Проверяем, что БД отвечает
+          mysql -h 127.0.0.1 -P 3306 -u app -ppass -e "SHOW TABLES;" app || echo "DB not ready yet"
 
-      - name: Start SUT
-        run: java -jar ./artifacts/app-deadline.jar -P:jdbc.url=jdbc:mysql://localhost:3306/app -P:jdbc.user=app -P:jdbc.password=pass &
+      - name: Start SUT in background
+        run: |
+          java -jar ./artifacts/app-deadline.jar -P:jdbc.url=jdbc:mysql://localhost:3306/app -P:jdbc.user=app -P:jdbc.password=pass &
+          echo "Waiting for SUT to start..."
+          sleep 20
+
+      - name: Check SUT is running
+        run: |
+          curl -v http://localhost:9999 || (echo "SUT failed to start" && exit 1)
 
       - name: Build with Gradle
         run: ./gradlew test --info -Dselenide.headless=true

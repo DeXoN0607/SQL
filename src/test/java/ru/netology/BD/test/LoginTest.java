@@ -52,6 +52,6 @@ public class LoginTest extends BaseTest {
         verificationPage.verifyInvalidCodeError();
 
         verificationPage.invalidVerify(wrongCode.getCode());
-        verificationPage.verifyBlockedError(); // или verifyErrorText("Превышено количество попыток...")
+        verificationPage.verifyBlockedError();
     }
 }
