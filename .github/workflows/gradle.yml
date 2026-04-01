@@ -28,28 +28,17 @@ jobs:
           java-version: '11'
           distribution: 'adopt'
 
-      - name: Wait for MySQL
-        run: |
-          for i in {1..30}; do
-            nc -z 127.0.0.1 3306 && exit 0
-            sleep 2
-          done
-          exit 1
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Waiting for container start
+        run: sleep 30
 
       - name: Start SUT
         run: java -jar ./artifacts/app-deadline.jar &
-        env:
-          SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:3306/app
-          SPRING_DATASOURCE_USERNAME: app
-          SPRING_DATASOURCE_PASSWORD: pass
 
-      - name: Wait for SUT
-        run: |
-          for i in {1..30}; do
-            nc -z 127.0.0.1 9999 && exit 0
-            sleep 2
-          done
-          exit 1
+      - name: Waiting for SUT start
+        run: sleep 20
 
-      - name: Run tests
+      - name: Build with Gradle
         run: ./gradlew test --info -Dselenide.headless=true
