@@ -19,23 +19,20 @@ public class VerificationPage {
         return new DashboardPage();
     }
 
-    public void invalidVerify(String code, String expectedText) {
-        enterCode(code);
-        verifyErrorText(expectedText);
-    }
-
-    public void enterCode(String code) {
+    public void invalidVerify(String code) {
         codeInput.setValue(code);
         verifyButton.click();
     }
 
-    public String getErrorMessage() {
-        error.shouldBe(visible);
-        return errorText.getText();
+    public void verifyErrorText(String expectedText) {
+        errorText.shouldBe(visible).shouldHave(text(expectedText));
     }
 
-    public void verifyErrorText(String expectedText) {
-        error.shouldBe(visible);
-        errorText.shouldHave(text(expectedText));
+    public void verifyInvalidCodeError() {
+        verifyErrorText("Неверно указан код! Попробуйте ещё раз.");
+    }
+
+    public void verifyBlockedError() {
+        verifyErrorText("Превышено количество попыток ввода кода");
     }
 }

@@ -1,39 +1,27 @@
 package ru.netology.BD.data;
 
+import com.github.javafaker.Faker;
+import lombok.experimental.UtilityClass;
+
+import java.util.Locale;
+
+@UtilityClass
 public class DataHelper {
+    private static final Faker faker = new Faker(new Locale("ru"));
 
     public static AuthInfo getValidUser() {
         return new AuthInfo("vasya", "qwerty123");
     }
 
     public static AuthInfo getInvalidUser() {
-        return new AuthInfo("vasya", "wrongpass");
+        return new AuthInfo(faker.name().username(), faker.internet().password());
+    }
+
+    public static AuthInfo getUserWithInvalidPassword(String login) {
+        return new AuthInfo(login, faker.internet().password());
     }
 
     public static VerificationCode getWrongCode() {
-        return new VerificationCode("000000");
-    }
-
-    public static class AuthInfo {
-        private final String login;
-        private final String password;
-
-        public AuthInfo(String login, String password) {
-            this.login = login;
-            this.password = password;
-        }
-
-        public String getLogin() { return login; }
-        public String getPassword() { return password; }
-    }
-
-    public static class VerificationCode {
-        private final String code;
-
-        public VerificationCode(String code) {
-            this.code = code;
-        }
-
-        public String getCode() { return code; }
+        return new VerificationCode(faker.number().digits(6));
     }
 }

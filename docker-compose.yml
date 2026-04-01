@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   mysql:
     image: mysql:8.0
@@ -11,33 +13,12 @@ services:
       - "3306:3306"
     volumes:
       - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
-    tmpfs:
-      - /var/lib/mysql
+      - mysql_data:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
       interval: 5s
       timeout: 10s
       retries: 10
-      start_period: 30s
 
-  sut:
-    image: eclipse-temurin:11-jre-jammy
-    container_name: sut_deadline
-    init: true
-    depends_on:
-      mysql:
-        condition: service_healthy
-    environment:
-      DB_URL: jdbc:mysql://mysql:3306/app
-      DB_USER: app
-      DB_PASS: pass
-    ports:
-      - "9999:9999"
-    volumes:
-      - ./artifacts/app-deadline.jar:/app/app-deadline.jar:ro
-    command: [ "java", "-jar", "/app/app-deadline.jar",
-               "-P:jdbc.url=jdbc:mysql://mysql:3306/app",
-               "-P:jdbc.user=app",
-               "-P:jdbc.password=pass" ]
-    stop_grace_period: 30s
-    stop_signal: SIGTERM
+volumes:
+  mysql_data:
