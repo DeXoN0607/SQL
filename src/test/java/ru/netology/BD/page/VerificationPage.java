@@ -13,11 +13,6 @@ public class VerificationPage {
     private SelenideElement error = $("[data-test-id=error-notification]");
     private SelenideElement errorText = error.$(".notification__content");
 
-    public DashboardPage validVerify(String code) {
-        codeInput.setValue(code);
-        verifyButton.click();
-        return new DashboardPage();
-    }
 
     public void invalidVerify(String code) {
         codeInput.setValue(code);
