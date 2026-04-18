@@ -14,20 +14,12 @@ public class VerificationPage {
     private SelenideElement errorText = error.$(".notification__content");
 
 
-    public void invalidVerify(String code) {
+    public void verify(String code) {
         codeInput.setValue(code);
         verifyButton.click();
     }
 
     public void verifyErrorText(String expectedText) {
         errorText.shouldBe(visible).shouldHave(text(expectedText));
-    }
-
-    public void verifyInvalidCodeError() {
-        verifyErrorText("Неверно указан код! Попробуйте ещё раз.");
-    }
-
-    public void verifyBlockedError() {
-        verifyErrorText("Превышено количество попыток ввода кода");
     }
 }

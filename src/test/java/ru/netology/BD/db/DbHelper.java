@@ -32,7 +32,9 @@ public class DbHelper {
     public static void cleanDatabase() {
         QueryRunner runner = new QueryRunner();
         try (Connection conn = DriverManager.getConnection(URL, USER, PASS)) {
+            runner.update(conn, "DELETE FROM card_transactions;");
             runner.update(conn, "DELETE FROM auth_codes;");
+            runner.update(conn, "DELETE FROM cards;");
             runner.update(conn, "DELETE FROM users;");
         }
     }

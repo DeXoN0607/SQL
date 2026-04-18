@@ -36,11 +36,4 @@ public class LoginPage {
         error.shouldBe(visible).shouldHave(text(expectedText));
     }
 
-    public void verifyWrongCredentialsError() {
-        verifyErrorText("Неверно указан логин или пароль");
-    }
-
-    public void verifyBlockedError() {
-        verifyErrorText("Пользователь заблокирован");
-    }
 }

@@ -10,6 +10,10 @@ import ru.netology.BD.page.VerificationPage;
 import ru.netology.BD.page.DashboardPage;
 
 public class LoginTest extends BaseTest {
+    public class ErrorMessages {
+        public static final String INVALID_CODE = "Неверно указан код! Попробуйте ещё раз.";
+        public static final String BLOCKED = "Превышено количество попыток ввода кода";
+    }
 
     @Test
     @DisplayName("Успешная авторизация валидным пользователем")
@@ -20,10 +24,9 @@ public class LoginTest extends BaseTest {
         VerificationPage verificationPage = loginPage.validLogin(user);
         var code = DbHelper.getVerificationCode(user.getLogin());
 
-        verificationPage.invalidVerify(code);
+        verificationPage.verify(code);
 
-        var dashboard = new DashboardPage();
-        dashboard.shouldBeVisible();
+        new DashboardPage().shouldBeVisible();
     }
 
     @Test
@@ -35,8 +38,8 @@ public class LoginTest extends BaseTest {
         VerificationPage verificationPage = loginPage.validLogin(user);
         var wrongCode = DataHelper.getWrongCode();
 
-        verificationPage.invalidVerify(wrongCode.getCode());
-        verificationPage.verifyInvalidCodeError();
+        verificationPage.verify(wrongCode.getCode());
+        verificationPage.verifyErrorText(ErrorMessages.INVALID_CODE);
     }
 
     @Test
@@ -48,13 +51,13 @@ public class LoginTest extends BaseTest {
         var loginPage = new LoginPage();
         VerificationPage verificationPage = loginPage.validLogin(user);
 
-        verificationPage.invalidVerify(wrongCode.getCode());
-        verificationPage.verifyInvalidCodeError();
+        verificationPage.verify(wrongCode.getCode());
+        verificationPage.verifyErrorText(ErrorMessages.INVALID_CODE);
 
-        verificationPage.invalidVerify(wrongCode.getCode());
-        verificationPage.verifyInvalidCodeError();
+        verificationPage.verify(wrongCode.getCode());
+        verificationPage.verifyErrorText(ErrorMessages.INVALID_CODE);
 
-        verificationPage.invalidVerify(wrongCode.getCode());
-        verificationPage.verifyBlockedError();
+        verificationPage.verify(wrongCode.getCode());
+        verificationPage.verifyErrorText(ErrorMessages.BLOCKED);
     }
 }
