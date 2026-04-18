@@ -13,25 +13,18 @@ public class LoginPage {
     private SelenideElement passwordInput = $("[data-test-id=password] input");
     private SelenideElement loginButton = $("[data-test-id=action-login]");
     private SelenideElement error = $("[data-test-id=error-notification]");
-    private SelenideElement errorText = error.$(".notification__content");
+
 
     private void fillForm(AuthInfo authInfo) {
         loginInput.setValue(authInfo.getLogin());
         passwordInput.setValue(authInfo.getPassword());
     }
 
-    public VerificationPage validLogin(AuthInfo authInfo) {
-        fillForm(authInfo);
-        loginButton.click();
-        return new VerificationPage();
-    }
-
-    public void invalidLogin(AuthInfo authInfo) {
+    public void login(AuthInfo authInfo) {
         fillForm(authInfo);
         loginButton.click();
     }
 
-    // Проверка текста ошибки, не только видимости
     public void verifyErrorText(String expectedText) {
         error.shouldBe(visible).shouldHave(text(expectedText));
     }

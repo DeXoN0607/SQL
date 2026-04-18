@@ -5,15 +5,14 @@ import org.junit.jupiter.api.Test;
 import ru.netology.BD.BaseTest;
 import ru.netology.BD.data.DataHelper;
 import ru.netology.BD.db.DbHelper;
-import ru.netology.BD.page.LoginPage;
-import ru.netology.BD.page.VerificationPage;
-import ru.netology.BD.page.DashboardPage;
+import ru.netology.BD.page.*;
 
 public class LoginTest extends BaseTest {
-    public class ErrorMessages {
-        public static final String INVALID_CODE = "Неверно указан код! Попробуйте ещё раз.";
-        public static final String BLOCKED = "Превышено количество попыток ввода кода";
-    }
+
+    private static final String INVALID_CODE =
+            "Неверно указан код! Попробуйте ещё раз.";
+    private static final String BLOCKED_CODE =
+            "Превышено количество попыток ввода кода";
 
     @Test
     @DisplayName("Успешная авторизация валидным пользователем")
@@ -21,7 +20,9 @@ public class LoginTest extends BaseTest {
         var user = DataHelper.getValidUser();
         var loginPage = new LoginPage();
 
-        VerificationPage verificationPage = loginPage.validLogin(user);
+        loginPage.login(user);
+
+        var verificationPage = new VerificationPage();
         var code = DbHelper.getVerificationCode(user.getLogin());
 
         verificationPage.verify(code);
@@ -30,34 +31,49 @@ public class LoginTest extends BaseTest {
     }
 
     @Test
+    @DisplayName("Ошибка при неверном логине")
+    void shouldShowErrorForInvalidLogin() {
+        var user = DataHelper.getInvalidUser();
+        var loginPage = new LoginPage();
+
+        loginPage.login(user);
+
+        loginPage.verifyErrorText("Неверно указан логин или пароль");
+    }
+
+    @Test
     @DisplayName("Ошибка при неверном коде верификации")
     void shouldShowErrorForWrongCode() {
         var user = DataHelper.getValidUser();
         var loginPage = new LoginPage();
 
-        VerificationPage verificationPage = loginPage.validLogin(user);
+        loginPage.login(user);
+
+        var verificationPage = new VerificationPage();
         var wrongCode = DataHelper.getWrongCode();
 
         verificationPage.verify(wrongCode.getCode());
-        verificationPage.verifyErrorText(ErrorMessages.INVALID_CODE);
+        verificationPage.verifyErrorText(INVALID_CODE);
     }
 
     @Test
-    @DisplayName("Блокировка после 3 неудачных попыток ввода кода")
+    @DisplayName("Блокировка после 3 неудачных попыток")
     void shouldBlockAfterThreeInvalidCodes() {
         var user = DataHelper.getValidUser();
         var wrongCode = DataHelper.getWrongCode();
 
         var loginPage = new LoginPage();
-        VerificationPage verificationPage = loginPage.validLogin(user);
+        loginPage.login(user);
+
+        var verificationPage = new VerificationPage();
 
         verificationPage.verify(wrongCode.getCode());
-        verificationPage.verifyErrorText(ErrorMessages.INVALID_CODE);
+        verificationPage.verifyErrorText(INVALID_CODE);
 
         verificationPage.verify(wrongCode.getCode());
-        verificationPage.verifyErrorText(ErrorMessages.INVALID_CODE);
+        verificationPage.verifyErrorText(INVALID_CODE);
 
         verificationPage.verify(wrongCode.getCode());
-        verificationPage.verifyErrorText(ErrorMessages.BLOCKED);
+        verificationPage.verifyErrorText(BLOCKED_CODE);
     }
 }
